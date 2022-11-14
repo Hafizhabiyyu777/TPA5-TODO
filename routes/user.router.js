@@ -10,8 +10,8 @@ const {
 router.get('/:id', getIdUser);
 
 // ==register
-router.post('/register/', addUser);
+router.post('/register', addUser);
 
-router.post('/login/', login);
+router.post('/login', login);
 
 module.exports = router;

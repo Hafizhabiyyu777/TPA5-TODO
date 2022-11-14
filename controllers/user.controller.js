@@ -1,6 +1,8 @@
 const db = require("../models");
 const { User } = db;
-const jwt = require("jsonwebtoken");
+
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const KEY = "asdfjsdaklf234234";
 
 module.exports = {
@@ -14,60 +16,64 @@ module.exports = {
         })
   },
 
-
-  addUser: async (req, res) => {
+  register: async (req, res) => {
     try {
-      const { username, password, email } = req.body;
-      const newuserData = {
-        username: username,
-        password: password,
-        email: email,
-        createdAt :new Date(),
-        updatedAt : new Date()
-      };
+      const { username, email, password } = req.body;
+      const saltRounds = await bcrypt.genSalt(10);
+      const hasPassword = await bcrypt.hash(password, saltRounds);
+      
+      const newDataRegister = {
+        username,
+        email,
+        password: hasPassword
+      }
 
-      const userData = await User.create(newuserData);
-      console.log(userData);
+      const users = await Users.create(newDataRegister);
+      console.log(users)
       res.status(201).json({
-        message: "new User created",
-        userData,
-      });
+        message: 'Register success',
+        data: users
+      }) 
     } catch (err) {
       res.status(500).json({
-        message: err.message || "internal server error",
-      });
+        message: err.message || 'Internal Server Error'
+      })
     }
   },
-
-
-
 
   login: async (req, res) => {
-    const { email, password } = req.body;
+    try {
+      const { username, email, password } = req.body;
+      const users = await User.findOne(email, username);
+      if (!users) {
+        return res.status(404).json({
+          message: 'user not found'
+        })
+      }
 
-    const userData = users.find(
-      (item) => email === item.email && password === item.password
-    );
-  
-    const token = jwt.sign(
-      {
-        id: userData.id,
-      },
-      KEY
-    );
-  
-    if (userData) {
-      res.json({
-        message: "success login",
-        token,
+      // comparing password
+      const hasPassword = await bcrypt.compare(password)
+
+      // mengecek password
+      if (!hasPassword) {
+        return res.status(401).json({
+          message: 'Password is incorrect',
+        })
+      }
+
+      // signing token with user email
+      const token = jwt.sign(email, KEY, {
+        expiresIn: '60s'
+      })
+
+      res.status(200).json({
+        message: 'Login Successfully',
+        accessToken: token,
       });
-    } else {
-      res.status(401).json({
-        message: "email or password are incorrect",
-      });
+    } catch (err) {
+        res.status(500).json({
+        message: err.message || 'Internal Server Error'
+      })
     }
-  },
-
-
-
+  }
 };
