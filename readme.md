@@ -1,7 +1,7 @@
 # TPA-005 Documentation
 
 ## Init
-command inisialisasi dapat dilihat di file ``` init.bad ```
+command inisialisasi dapat dilihat di file ` init.bad `
 
 ## Server at https://localhost:3000
 
