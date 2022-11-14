@@ -18,7 +18,7 @@ request body :
     'password' : '1,2,3,4'
  }
 ```
-#### login : users.login
+#### login : users/login
 
 ### Todo
 #### untuk get/post semua bisa memakai : todos/
