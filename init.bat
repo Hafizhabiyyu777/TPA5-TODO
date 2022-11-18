@@ -1,6 +1,6 @@
 # inisiasi
 npx sequelize-cli init
-npm install --save sequelize
+npm install -D sequelize-cli
 npm install sequelize mysql2
 
 # buat database
